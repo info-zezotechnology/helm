@@ -18,23 +18,21 @@ package repotest
 import (
 	"io"
 	"net/http"
-	"os"
 	"path/filepath"
 	"testing"
 
 	"sigs.k8s.io/yaml"
 
-	"helm.sh/helm/v3/internal/test/ensure"
-	"helm.sh/helm/v3/pkg/repo"
+	"helm.sh/helm/v4/internal/test/ensure"
+	"helm.sh/helm/v4/pkg/repo"
 )
 
 // Young'n, in these here parts, we test our tests.
 
 func TestServer(t *testing.T) {
-	defer ensure.HelmHome(t)()
+	ensure.HelmHome(t)
 
-	rootDir := ensure.TempDir(t)
-	defer os.RemoveAll(rootDir)
+	rootDir := t.TempDir()
 
 	srv := NewServer(rootDir)
 	defer srv.Stop()
@@ -99,7 +97,7 @@ func TestServer(t *testing.T) {
 }
 
 func TestNewTempServer(t *testing.T) {
-	defer ensure.HelmHome(t)()
+	ensure.HelmHome(t)
 
 	srv, err := NewTempServerWithCleanup(t, "testdata/examplechart-0.1.0.tgz")
 	if err != nil {

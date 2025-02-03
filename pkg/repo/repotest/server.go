@@ -33,12 +33,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"sigs.k8s.io/yaml"
 
-	"helm.sh/helm/v3/internal/tlsutil"
-	"helm.sh/helm/v3/pkg/chart"
-	"helm.sh/helm/v3/pkg/chart/loader"
-	"helm.sh/helm/v3/pkg/chartutil"
-	ociRegistry "helm.sh/helm/v3/pkg/registry"
-	"helm.sh/helm/v3/pkg/repo"
+	"helm.sh/helm/v4/internal/tlsutil"
+	"helm.sh/helm/v4/pkg/chart"
+	"helm.sh/helm/v4/pkg/chart/loader"
+	"helm.sh/helm/v4/pkg/chartutil"
+	ociRegistry "helm.sh/helm/v4/pkg/registry"
+	"helm.sh/helm/v4/pkg/repo"
 )
 
 // NewTempServerWithCleanup creates a server inside of a temp dir.
@@ -61,7 +61,7 @@ func NewTempServerWithCleanupAndBasicAuth(t *testing.T, glob string) *Server {
 	if err != nil {
 		t.Fatal(err)
 	}
-	srv.WithMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv.WithMiddleware(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
 		username, password, ok := r.BasicAuth()
 		if !ok || username != "username" || password != "password" {
 			t.Errorf("Expected request to use basic auth and for username == 'username' and password == 'password', got '%v', '%s', '%s'", ok, username, password)
@@ -163,9 +163,10 @@ func (srv *OCIServer) Run(t *testing.T, opts ...OCIServerOpt) {
 	err = registryClient.Login(
 		srv.RegistryURL,
 		ociRegistry.LoginOptBasicAuth(srv.TestUsername, srv.TestPassword),
-		ociRegistry.LoginOptInsecure(false))
+		ociRegistry.LoginOptInsecure(true),
+		ociRegistry.LoginOptPlainText(true))
 	if err != nil {
-		t.Fatalf("error logging into registry with good credentials")
+		t.Fatalf("error logging into registry with good credentials: %v", err)
 	}
 
 	ref := fmt.Sprintf("%s/u/ocitestuser/oci-dependent-chart:0.1.0", srv.RegistryURL)

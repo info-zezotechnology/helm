@@ -24,12 +24,12 @@ import (
 
 	"github.com/pkg/errors"
 
-	"helm.sh/helm/v3/pkg/chartutil"
-	"helm.sh/helm/v3/pkg/cli"
-	"helm.sh/helm/v3/pkg/downloader"
-	"helm.sh/helm/v3/pkg/getter"
-	"helm.sh/helm/v3/pkg/registry"
-	"helm.sh/helm/v3/pkg/repo"
+	"helm.sh/helm/v4/pkg/chartutil"
+	"helm.sh/helm/v4/pkg/cli"
+	"helm.sh/helm/v4/pkg/downloader"
+	"helm.sh/helm/v4/pkg/getter"
+	"helm.sh/helm/v4/pkg/registry"
+	"helm.sh/helm/v4/pkg/repo"
 )
 
 // Pull is the action for checking a given release's information.
@@ -56,13 +56,8 @@ func WithConfig(cfg *Configuration) PullOpt {
 	}
 }
 
-// NewPull creates a new Pull object.
-func NewPull() *Pull {
-	return NewPullWithOpts()
-}
-
-// NewPullWithOpts creates a new pull, with configuration options.
-func NewPullWithOpts(opts ...PullOpt) *Pull {
+// NewPull creates a new Pull with configuration options.
+func NewPull(opts ...PullOpt) *Pull {
 	p := &Pull{}
 	for _, fn := range opts {
 		fn(p)
